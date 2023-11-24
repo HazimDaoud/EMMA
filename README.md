@@ -19,5 +19,5 @@ git clone git@github.com:Datanauts-DSII/fallDetection.git
 
 ```
 
-### 2. Clone the Repository
+### 2. Navigate to the cloned repository
 Navigate to the cloned repository on your local machine. For detailed setup instructions, please refer to the README files in each specific folder.
