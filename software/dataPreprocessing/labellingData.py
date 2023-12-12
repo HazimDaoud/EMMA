@@ -14,6 +14,7 @@ def labelSingle_csvfile(filename):
     df['fall'] = addTargetVariable(filename)
     return df
 
+
 def labelMultiple_Csvfiles(directiory):
 
     csvFiles = [file for file in os.listdir(directiory) if file.endswith('.csv')]
@@ -103,12 +104,15 @@ def main():
     # helpers.saveDataframe_as_csvfile(df,'dataSets/dummy_data_labelled', 'dummy_data_all_shuffled' )
 
     ##Mobi
-    rootDirectory = "dataSets/MobiFall_Dataset_v2.0_raw"
+    rootDirectory =  "../../dataSets/MobiFall_Dataset_v2.0_raw"
     for sub_directory in os.listdir(rootDirectory):
-        sub_directory_path = os.path.join(rootDirectory, sub_directory)
+        sub_directory_path = os.path.join('..', '..', rootDirectory, sub_directory)
         processSubdirectory(sub_directory_path, 'FALLS')
         processSubdirectory(sub_directory_path, 'ADL')
 
+    ##FallAllD
+    fallalld_directory = 'dataSets/FallAllD'
+    fallalld_csv = pd.read_csv(os.path.join('..', '..', fallalld_directory, 'FallAllD_raw.csv'))
 
 if __name__ == "__main__":
     main()
