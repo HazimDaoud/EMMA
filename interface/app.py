@@ -22,10 +22,11 @@ class unatest(toga.App):
             on_press=self.say_hello,
             style=Pack(padding=5)
         )
-
+        button_disconnect = toga.Button("Disconnect", on_press=self.disconnectBLE,style=Pack(padding=5))
 
        
         main_box.add(button)
+        main_box.add(button_disconnect)
         
         self.show_label = toga.Label("Values:")
         main_box.add(self.show_label)
@@ -33,6 +34,13 @@ class unatest(toga.App):
         self.main_window = toga.MainWindow(title=self.formal_name)
         self.main_window.content = main_box
         self.main_window.show()
+        self.connected = True
+    
+    
+    def disconnectBLE(self,widget):
+        self.connected= False
+        #widget.text = "something"
+
 
     async def say_hello(self, widget):
         widget.text = "scanning"
@@ -43,10 +51,13 @@ class unatest(toga.App):
                 widget.text = device.name
                 device_found = device
 
-
+        #self.connected = True
+        print(self.connected)
         async with bleak.BleakClient(device_found.address) as client:
+            #self.connected=True
             await client.start_notify("00002A56-0000-1000-8000-00805f9b34fb", self.handle_notification)
-            widget.text = "connected"
+            while self.connected:
+                widget.text = "connected"
             await client.stop_notify("00002A56-0000-1000-8000-00805f9b34fb")
         widget.text = "disconnected"
         self.show_label.text += "read values"
