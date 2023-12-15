@@ -93,7 +93,9 @@ def processSubdirectory(rootDirectory, activityType):
             if os.path.exists(subdirectoryPath):
                 processActivityDirs(subdirectoryPath)
 
-
+def preprocess_fallalld(fallalld):
+    fallalld = fallalld[fallalld['Device']=='Waist']
+    return fallalld
 
 def main():
     ## Sensor
@@ -112,7 +114,10 @@ def main():
 
     ##FallAllD
     fallalld_directory = 'dataSets/FallAllD'
-    fallalld_csv = pd.read_csv(os.path.join('..', '..', fallalld_directory, 'FallAllD_raw.csv'))
+    fallalld_csv = pd.read_csv(os.path.join('..', '..', fallalld_directory, 'FallAllD_raw.csv'), index_col=0)
+    fallalld = preprocess_fallalld(fallalld_csv)
+    print(fallalld)
+
 
 if __name__ == "__main__":
     main()
