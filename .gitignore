@@ -1,7 +1,6 @@
 # .gitignore for Python projects
 
 # Virtual Environment
-venv/
 
 # Byte-compiled / optimized Python files
 __pycache__/
