@@ -1,0 +1,27 @@
+# .gitignore for Python projects
+
+# Virtual Environment
+venv/
+
+# Byte-compiled / optimized Python files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Editor-specific files
+.idea/
+.vscode/
+
+# Local configuration file (e.g., pycharm configs)
+*.iml
+
+# Compiled Python files
+*.pyc
+
+# Compiled C extension
+*.so
+
+# Caches and logs
+*.log
+*.cache/
