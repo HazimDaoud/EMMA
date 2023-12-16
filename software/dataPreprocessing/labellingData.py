@@ -95,23 +95,6 @@ def processSubdirectory(rootDirectory, activityType):
                 processActivityDirs(subdirectoryPath)
 
 def preprocess_fallalld(fallalld):
-    # fallalld = fallalld[fallalld['Device'] == 'Waist']
-    # subjects = fallalld['SubjectID'].unique()
-    # count = 0
-    # for i in subjects:
-    #     is_subject = fallalld['SubjectID'] == i
-    #     activities = fallalld[is_subject]['ActivityID'].unique()
-    #     for j in activities:
-    #         is_activity = fallalld['ActivityID'] == j
-    #         trials = fallalld[is_subject & is_activity]['TrialNo'].unique()
-    #         for k in trials:
-    #             is_trial = fallalld['TrialNo'] == k
-    #             acc = pd.DataFrame(fallalld.loc[(is_activity & is_subject & is_trial), 'Acc'].iloc[0], columns = ['accelerometer_x', 'accelerometer_y', 'accelerometer_z'])
-    #             acc['fall'] = 1 if j>100 else 0
-    #             name = 'fallalld_'+ str(count)
-    #             acc.to_csv(os.path.join('..', '..', 'dataSets/FallAllD_labelled', name))
-    #             count = count +1
-    # return fallalld
     fallalld = fallalld[fallalld['Device'] == 'Waist']
     count = 0
 
