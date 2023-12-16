@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 import os
 import helpers
 from io import StringIO
@@ -94,7 +95,36 @@ def processSubdirectory(rootDirectory, activityType):
                 processActivityDirs(subdirectoryPath)
 
 def preprocess_fallalld(fallalld):
-    fallalld = fallalld[fallalld['Device']=='Waist']
+    # fallalld = fallalld[fallalld['Device'] == 'Waist']
+    # subjects = fallalld['SubjectID'].unique()
+    # count = 0
+    # for i in subjects:
+    #     is_subject = fallalld['SubjectID'] == i
+    #     activities = fallalld[is_subject]['ActivityID'].unique()
+    #     for j in activities:
+    #         is_activity = fallalld['ActivityID'] == j
+    #         trials = fallalld[is_subject & is_activity]['TrialNo'].unique()
+    #         for k in trials:
+    #             is_trial = fallalld['TrialNo'] == k
+    #             acc = pd.DataFrame(fallalld.loc[(is_activity & is_subject & is_trial), 'Acc'].iloc[0], columns = ['accelerometer_x', 'accelerometer_y', 'accelerometer_z'])
+    #             acc['fall'] = 1 if j>100 else 0
+    #             name = 'fallalld_'+ str(count)
+    #             acc.to_csv(os.path.join('..', '..', 'dataSets/FallAllD_labelled', name))
+    #             count = count +1
+    # return fallalld
+    fallalld = fallalld[fallalld['Device'] == 'Waist']
+    count = 0
+
+    for subject_id, subject_group in fallalld.groupby('SubjectID'):
+        for activity_id, activity_group in subject_group.groupby('ActivityID'):
+            for trial_no, trial_group in activity_group.groupby('TrialNo'):
+                acc_data = trial_group['Acc'].iloc[0]
+                acc = pd.DataFrame(acc_data, columns=['accelerometer_x', 'accelerometer_y', 'accelerometer_z'])
+                acc['fall'] = 1 if activity_id > 100 else 0
+                name = f'fallalld_{count}'
+                acc.to_csv(os.path.join('..', '..', 'dataSets', 'FallAllD_labelled', f'{name}.csv'), index=False)
+                count += 1
+
     return fallalld
 
 def main():
@@ -112,9 +142,9 @@ def main():
         processSubdirectory(sub_directory_path, 'FALLS')
         processSubdirectory(sub_directory_path, 'ADL')
 
-    ##FallAllD
-    fallalld_directory = 'dataSets/FallAllD'
-    fallalld_csv = pd.read_csv(os.path.join('..', '..', fallalld_directory, 'FallAllD_raw.csv'), index_col=0)
+    ##FallAllD_raw
+    fallalld_directory = 'dataSets/FallAllD_raw'
+    fallalld_csv = pd.read_pickle(os.path.join('..', '..', fallalld_directory, 'FallAllD_raw.pkl'))
     fallalld = preprocess_fallalld(fallalld_csv)
     print(fallalld)
 
