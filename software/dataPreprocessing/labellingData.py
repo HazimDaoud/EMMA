@@ -1,5 +1,4 @@
 import pandas as pd
-import numpy as np
 import os
 import helpers
 from io import StringIO
@@ -14,7 +13,6 @@ def labelSingle_csvfile(filename):
     df.columns = ['accelerometer_x', 'accelerometer_y', 'accelerometer_z', 'gyroscope_x', 'gyroscope_y', 'gyroscope_z']
     df['fall'] = addTargetVariable(filename)
     return df
-
 
 def labelMultiple_Csvfiles(directiory):
 
@@ -93,6 +91,19 @@ def processSubdirectory(rootDirectory, activityType):
 
             if os.path.exists(subdirectoryPath):
                 processActivityDirs(subdirectoryPath)
+
+def readSubsCsvs(subdir):
+    dfs = []
+    for root, dirs, files in os.walk(subdir):
+        for file in files:
+            if "acc" in file:
+                filepath = os.path.join(root, file)
+                df = pd.read_csv(filepath)
+                dfs.append(df)
+
+    if dfs:
+        finalDf = pd.concat(dfs, ignore_index=True)
+        return finalDf
 
 def preprocess_fallalld(fallalld):
     fallalld = fallalld[fallalld['Device'] == 'Waist']
