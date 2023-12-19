@@ -92,7 +92,34 @@ def processSubdirectory(rootDirectory, activityType):
             if os.path.exists(subdirectoryPath):
                 processActivityDirs(subdirectoryPath)
 
+def readSubsCsvs(subdir):
+    dfs = []
+    for root, dirs, files in os.walk(subdir):
+        for file in files:
+            if "acc" in file:
+                filepath = os.path.join(root, file)
+                df = pd.read_csv(filepath)
+                dfs.append(df)
 
+    if dfs:
+        finalDf = pd.concat(dfs, ignore_index=True)
+        return finalDf
+
+def preprocess_fallalld(fallalld):
+    fallalld = fallalld[fallalld['Device'] == 'Waist']
+    count = 0
+
+    for subject_id, subject_group in fallalld.groupby('SubjectID'):
+        for activity_id, activity_group in subject_group.groupby('ActivityID'):
+            for trial_no, trial_group in activity_group.groupby('TrialNo'):
+                acc_data = trial_group['Acc'].iloc[0]
+                acc = pd.DataFrame(acc_data, columns=['accelerometer_x', 'accelerometer_y', 'accelerometer_z'])
+                acc['fall'] = 1 if activity_id > 100 else 0
+                name = f'acc_{count}'
+                acc.to_csv(os.path.join('..', '..', 'dataSets', 'FallAllD_labelled', f'{name}.csv'), index=False)
+                count += 1
+
+    return fallalld
 
 def main():
     ## Sensor
@@ -103,11 +130,17 @@ def main():
     # helpers.saveDataframe_as_csvfile(df,'dataSets/dummy_data_labelled', 'dummy_data_all_shuffled' )
 
     ##Mobi
-    rootDirectory = "dataSets/MobiFall_Dataset_v2.0_raw"
+    rootDirectory =  "../../dataSets/MobiFall_Dataset_v2.0_raw"
     for sub_directory in os.listdir(rootDirectory):
-        sub_directory_path = os.path.join(rootDirectory, sub_directory)
+        sub_directory_path = os.path.join('..', '..', rootDirectory, sub_directory)
         processSubdirectory(sub_directory_path, 'FALLS')
         processSubdirectory(sub_directory_path, 'ADL')
+
+    ##FallAllD_raw
+    fallalld_directory = 'dataSets/FallAllD_raw'
+    fallalld_csv = pd.read_pickle(os.path.join('..', '..', fallalld_directory, 'FallAllD_raw.pkl'))
+    fallalld = preprocess_fallalld(fallalld_csv)
+    print(fallalld)
 
 
 if __name__ == "__main__":
