@@ -115,13 +115,6 @@ def preprocess_fallalld(fallalld):
                 acc_data = trial_group['Acc'].iloc[0]
                 acc = pd.DataFrame(acc_data, columns=['accelerometer_x', 'accelerometer_y', 'accelerometer_z'])
                 acc['fall'] = 1 if activity_id > 100 else 0
-                # Example of creating lagged features
-                acc['x_lag_1'] = acc['accelerometer_x'].shift(1)
-                acc['x_lag_2'] = acc['accelerometer_x'].shift(2)
-                acc['y_lag_1'] = acc['accelerometer_y'].shift(1)
-                acc['y_lag_2'] = acc['accelerometer_y'].shift(2)
-                acc['z_lag_1'] = acc['accelerometer_z'].shift(1)
-                acc['z_lag_2'] = acc['accelerometer_z'].shift(2)
                 name = f'acc_{count}'
                 acc.to_csv(os.path.join('..', '..', 'dataSets', 'FallAllD_labelled', f'{name}.csv'), index=False)
                 count += 1
