@@ -5,6 +5,21 @@ import numpy as np
 import time
 from datetime import datetime
 from flask_socketio import SocketIO
+import bleak
+from bleak import BleakScanner
+from bleak import BleakClient
+import asyncio
+
+global connected 
+global data_buffer
+global classification
+global battery_percentage
+connected = False
+data_buffer = [0,0,0]
+classification = False
+battery_percentage = 1
+
+
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///patients.db'
@@ -27,9 +42,91 @@ def get_battery_percentage():
     return jsonify({'percentage': random.randint(0, 100), 'loading': random.choice([True, False])})
 
 
+@app.route('/connect')
+def connect_disconnect():
+    global connected
+    connected = not connected
+    return jsonify({'connected':connected})
+
+@app.route('/scan_BLE')
+async def ble_connection():
+    global connected
+    device = await ble_scan()
+    #await fall_ble()
+    
+    async with bleak.BleakClient(device.address) as client:
+        await client.start_notify("00002A56-0000-1000-8000-00805f9b34fb", handle_notification)
+        while connected: # currently hears what arduino is sending
+            await asyncio.sleep(1) #could change frequency of readings 
+        await client.stop_notify("00002A56-0000-1000-8000-00805f9b34fb")
+
+    return jsonify({'connected':connected})
+
+#@app.route('/fall_BLE')
+async def fall_ble():
+    global connected
+    device = await ble_scan()
+    
+    async with bleak.BleakClient(device.address) as client:
+        await client.start_notify("19b10001-e8f2-537e-4f6c-d104768a1214", handle_notification_fall)
+        while connected: # currently hears what arduino is sending
+            await asyncio.sleep(1) #could change frequency of readings 
+        await client.stop_notify("19b10001-e8f2-537e-4f6c-d104768a1214")
+
+    return jsonify({'connected':connected})
+
+def handle_notification_fall(sender:str, data:bytearray):
+    data_read = data.decode()
+    print(data_read)
+
+def handle_notification(sender:str, data:bytearray):
+    prev_data = get_data()
+    data_read = data.decode()
+    data_read = np.fromstring(data_read, dtype=float, sep=',') #incoming data as an array
+
+    for i in range(3): #update 3 for the 6 after we send more data
+        prev_data[i]= data_read[i]
+
+    set_data(data=prev_data)
+
+def set_prediction(prediction):
+    global classification
+    classification = prediction
+
+def get_predict():
+    global classification
+    return classification
+
+def set_data(data):
+    global data_buffer
+    data_buffer = data
+
+def get_data():
+    global data_buffer
+    return data_buffer
+
+def set_battery(battery):
+    global battery_percentage
+    get_battery_percentage = battery
+
+def get_battery():
+    global battery_percentage
+    return battery_percentage
+
+   
+async def ble_scan():
+    scanned = await bleak.BleakScanner.discover()
+    device_list = []
+    for device in scanned:
+        if  device.name == "Arduino Datanauts" :
+            device_list = device
+    
+    return device_list
+
 @app.route('/update_led')
 def get_connection_status():
-    return jsonify({'connected': random.choice([True, False, None])})
+    global connected
+    return jsonify({'connected': connected})
 
 
 ### Database Start ###
@@ -72,11 +169,15 @@ def history(patient_id):
 
 @socketio.on('get_measurements')
 def get_measurements():
-    while True:
-        data = [random.randint(0, 100), random.randint(0, 100), random.randint(0, 100)]
-        socketio.emit('measurements', {'data': data, 'classification': random.choice([True, False])})
+    global connected
+    while True: #need to change this for it to only work when connected
+        data = get_data()
+        prediction = get_predict()
+        socketio.emit('measurements', {'data': data, 'classification': prediction})
         time.sleep(0.1)
+        
 
 
 if __name__ == '__main__':
     app.run()
+    

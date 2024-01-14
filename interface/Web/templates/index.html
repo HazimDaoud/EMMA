@@ -63,6 +63,40 @@
     </div>
 </div>
 
+
+<!-- COnnect BLE -->
+<div class="alert" id="connect-container">
+    <script src="{{ url_for('static', filename='js/alert.js') }}"></script>
+    <button class="btn " id="connect-btn">Connect</button>
+    <script>
+        var conn_btn = document.getElementById("connect-btn");
+        conn_btn.addEventListener("click", () => {
+            fetch('/scan_BLE')
+            .then(response => response.json())
+            .then(data => {
+                //conn_btn.innerHTML = 'Connected to '+ data.connected
+                
+            })
+           
+           //.then(conn_btn.style = "background-color:red")
+           .then(fetch('/connect'))
+           then(response => response.json())
+            .then(data => {
+                conn_btn.innerHTML = data.connected
+            })
+            
+                
+
+           
+                
+            
+           
+        })
+        
+    </script>
+</div>
+
+
 <script>
     function updateConnection() {
         // Make an asynchronous request to the Flask server
@@ -70,7 +104,7 @@
             .then(response => response.json())
             .then(data => {
                 const ledContainer = document.getElementById('LED-container');
-
+                
                 if (data.connected === null) {
                     ledContainer.innerHTML = `
                         <div class="led-box">
