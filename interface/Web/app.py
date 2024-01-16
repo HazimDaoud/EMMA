@@ -17,7 +17,7 @@ global battery_percentage
 connected = False
 data_buffer = [0,0,0]
 classification = False
-battery_percentage = 1
+battery_percentage = 0
 
 
 
@@ -39,7 +39,7 @@ def main():
 
 @app.route('/update_battery')
 def get_battery_percentage():
-    return jsonify({'percentage': random.randint(0, 100), 'loading': random.choice([True, False])})
+    return jsonify({'percentage': get_battery(), 'loading': random.choice([True, False])})
 
 
 @app.route('/connect')
@@ -56,9 +56,13 @@ async def ble_connection():
     
     async with bleak.BleakClient(device.address) as client:
         await client.start_notify("00002A56-0000-1000-8000-00805f9b34fb", handle_notification)
+        await client.start_notify("00002A50-0000-1000-8000-00805f9b34fb", handle_notification_fall)
+        await client.start_notify("00002A55-0000-1000-8000-00805f9b34fb", handle_notification_battery)
         while connected: # currently hears what arduino is sending
             await asyncio.sleep(1) #could change frequency of readings 
         await client.stop_notify("00002A56-0000-1000-8000-00805f9b34fb")
+        await client.stop_notify("00002A50-0000-1000-8000-00805f9b34fb")
+        await client.stop_notify("00002A55-0000-1000-8000-00805f9b34fb")
 
     return jsonify({'connected':connected})
 
@@ -75,9 +79,17 @@ async def fall_ble():
 
     return jsonify({'connected':connected})
 
+def handle_notification_battery(sender:str, data:bytearray):
+    data_read = data.decode()
+    data_read = int(data_read)
+    set_battery(data_read)
+    
+
+
 def handle_notification_fall(sender:str, data:bytearray):
     data_read = data.decode()
-    print(data_read)
+    data_read = int(data_read)
+    set_prediction(data_read)
 
 def handle_notification(sender:str, data:bytearray):
     prev_data = get_data()
@@ -107,7 +119,7 @@ def get_data():
 
 def set_battery(battery):
     global battery_percentage
-    get_battery_percentage = battery
+    battery_percentage = battery
 
 def get_battery():
     global battery_percentage
