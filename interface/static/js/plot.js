@@ -78,7 +78,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!freeze && data.classification) {
             // Simulate a fall button click
             freeze = true
-            //simulateFallButtonClick();
+            simulateFallButtonClick(); /* Comment out here to stop automatic alert trigger */
         }
     });
 });
