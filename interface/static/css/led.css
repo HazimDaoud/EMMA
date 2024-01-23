@@ -1,0 +1,120 @@
+.container {
+    background-size: cover;
+    width: 100px;
+}
+
+.clearfix::after {
+    content: "";
+    clear: both;
+    display: table;
+}
+
+.led-box {
+    height: 30px;
+    width: 30px;
+    text-align: center;
+    margin: 0 auto;
+}
+
+.led-box p {
+    font-weight: bold;
+    font-size: 18px;
+    margin: 0.5em -1.4em;
+}
+
+.led-red {
+    margin: 0 auto;
+    width: 36px;
+    height: 36px;
+    background-color: #F00;
+    border-radius: 50%;
+    box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 7px 1px, inset #441313 0 -1px 9px, rgba(255, 0, 0, 0.5) 0 2px 12px;
+}
+
+.led-yellow {
+    margin: 0 auto;
+    width: 36px;
+    height: 36px;
+    background-color: #FF0;
+    border-radius: 50%;
+    box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 7px 1px, inset #808002 0 -1px 9px, #FF0 0 2px 12px;
+    -webkit-animation: blinkYellow 1s infinite;
+    -moz-animation: blinkYellow 1s infinite;
+    -ms-animation: blinkYellow 1s infinite;
+    -o-animation: blinkYellow 1s infinite;
+    animation: blinkYellow 1s infinite;
+}
+
+.led-green {
+    margin: 0 auto;
+    width: 36px;
+    height: 36px;
+    background-color: #ABFF00;
+    border-radius: 50%;
+    box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 7px 1px, inset #304701 0 -1px 9px, #89FF00 0 2px 12px;
+}
+
+@-webkit-keyframes blinkYellow {
+    from {
+        background-color: #FF0;
+    }
+    50% {
+        background-color: #AA0;
+        box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 7px 1px, inset #808002 0 -1px 9px, #FF0 0 2px 0;
+    }
+    to {
+        background-color: #FF0;
+    }
+}
+
+@-moz-keyframes blinkYellow {
+    from {
+        background-color: #FF0;
+    }
+    50% {
+        background-color: #AA0;
+        box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 7px 1px, inset #808002 0 -1px 9px, #FF0 0 2px 0;
+    }
+    to {
+        background-color: #FF0;
+    }
+}
+
+@-ms-keyframes blinkYellow {
+    from {
+        background-color: #FF0;
+    }
+    50% {
+        background-color: #AA0;
+        box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 7px 1px, inset #808002 0 -1px 9px, #FF0 0 2px 0;
+    }
+    to {
+        background-color: #FF0;
+    }
+}
+
+@-o-keyframes blinkYellow {
+    from {
+        background-color: #FF0;
+    }
+    50% {
+        background-color: #AA0;
+        box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 7px 1px, inset #808002 0 -1px 9px, #FF0 0 2px 0;
+    }
+    to {
+        background-color: #FF0;
+    }
+}
+
+@keyframes blinkYellow {
+    from {
+        background-color: #FF0;
+    }
+    50% {
+        background-color: #AA0;
+        box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 7px 1px, inset #808002 0 -1px 9px, #FF0 0 2px 0;
+    }
+    to {
+        background-color: #FF0;
+    }
+}
