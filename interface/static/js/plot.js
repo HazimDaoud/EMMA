@@ -12,21 +12,21 @@ document.addEventListener('DOMContentLoaded', function () {
             datasets: [
                 {
                     label: 'X',
-                    data: [],
+                    data: Array(datapoints_to_display).fill(0),
                     fill: false,
                     borderColor: 'red',
                     borderWidth: 2
                 },
                 {
                     label: 'Y',
-                    data: [],
+                    data: Array(datapoints_to_display).fill(0),
                     fill: false,
                     borderColor: 'green',
                     borderWidth: 2
                 },
                 {
                     label: 'Z',
-                    data: [],
+                    data: Array(datapoints_to_display).fill(0),
                     fill: false,
                     borderColor: 'blue',
                     borderWidth: 2
@@ -37,6 +37,19 @@ document.addEventListener('DOMContentLoaded', function () {
             responsive: true,
             maintainAspectRatio: false,
             animation: false,
+            scales: {
+                x: {
+                    type: 'linear',
+                    position: 'bottom',
+                    min: 0,                  // Set the minimum value for the x-axis
+                    max: datapoints_to_display,  // Set the maximum value for the x-axis
+                },
+                y: {
+                    type: 'linear',
+                    suggestedMin: -1,    // Set the minimum value for the y-axis
+                    suggestedMax: 1,     // Set the maximum value for the y-axis
+                }
+            },
             datasets: {
                 line: {
                     pointRadius: 0 // disable for all `'line'` datasets
@@ -68,6 +81,13 @@ document.addEventListener('DOMContentLoaded', function () {
             myChart.data.datasets[1].data.shift();
             myChart.data.datasets[2].data.shift();
         }
+        // Calculate the minimum and maximum values from the data
+        const minValue = Math.min(...myChart.data.datasets.flatMap(dataset => dataset.data));
+        const maxValue = Math.max(...myChart.data.datasets.flatMap(dataset => dataset.data));
+
+        // Update the y-axis boundaries
+        myChart.options.scales.y.suggestedMin = minValue - 1; // Adding a buffer
+        myChart.options.scales.y.suggestedMax = maxValue + 1; // Adding a buffer
         if (!stop) {
             myChart.update();
             var fallStatus = document.getElementById('fallStatus');
@@ -78,7 +98,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!freeze && data.classification) {
             // Simulate a fall button click
             freeze = true
-            simulateFallButtonClick(); /* Comment out here to stop automatic alert trigger */
+            //simulateFallButtonClick();
         }
     });
 });
