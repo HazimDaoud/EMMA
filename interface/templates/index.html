@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Datanauts</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/alert.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/battery.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/led.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/table.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/play.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/button.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        .centered-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px; /* Adjust as needed */
+        }
+
+        .centered-row .player-container,
+        .centered-row .LED-container,
+        .centered-row .battery-container,
+        .centered-row .alert-container {
+            margin: auto; /* Adjust spacing between elements as needed */
+        }
+    </style>
+
+</head>
+<body>
+
+<div class="centered-row">
+    <!-- LED -->
+    <div class="LED-container clearfix" id="LED-container">
+        {% if connected %}
+            <div class="led-box">
+                <div class="led-green"></div>
+                <p>Connected</p>
+            </div>
+        {% elif not connected %}
+            <div class="led-box">
+                <div class="led-red"></div>
+                <p>Disconnected</p>
+            </div>
+        {% endif %}
+        <div class="led-box">
+            <div class="led-yellow"></div>
+            <p>Connecting...</p>
+        </div>
+    </div>
+
+    <script>
+        function updateConnection() {
+            // Make an asynchronous request to the Flask server
+            fetch('/update_led ')
+                .then(response => response.json())
+                .then(data => {
+                    const ledContainer = document.getElementById('LED-container');
+
+                    if (data.connected === null) {
+                        ledContainer.innerHTML = `
+                        <div class="led-box">
+                            <div class="led-yellow"></div>
+                            <p>Connecting...</p>
+                        </div>`;
+                    } else if (data.connected) {
+                        ledContainer.innerHTML = `
+                        <div class="led-box">
+                            <div class="led-green"></div>
+                            <p>Connected</p>
+                        </div>`;
+                    } else {
+                        ledContainer.innerHTML = `
+                        <div class="led-box">
+                            <div class="led-red"></div>
+                            <p>Disconnected</p>
+                        </div>`;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching connection:', error);
+                });
+        }
+
+        // Update the random number every second
+        setInterval(updateConnection, 1000);
+
+        // Initial update
+        updateConnection();
+    </script>
+
+    <!-- Battery -->
+    <div class="battery-container" id="battery-container">
+        {% if loading %}
+            <div class="battery dynamic"></div>
+        {% else %}
+            <div class="battery static" style="--battery-percentage: {{ battery_percentage }};"></div>
+        {% endif %}
+        <div class="battery-percentage">{{ battery_percentage }}%</div>
+    </div>
+    <script>
+        function updatePercentage() {
+            // Make an asynchronous request to the Flask server
+            fetch('/update_battery ')
+                .then(response => response.json())
+                .then(data => {
+                    const batteryContainer = document.getElementById('battery-container');
+                    batteryContainer.innerHTML = `
+                        <div class="${data.loading ? 'battery dynamic' : 'battery static'}" style="--battery-percentage: ${data.percentage};"></div>
+                        <div class="battery-percentage">${data.percentage}%</div>`;
+                })
+                .catch(error => {
+                    console.error('Error fetching battery:', error);
+                });
+        }
+
+        // Update the random number every second
+        setInterval(updatePercentage, 1000);
+
+        // Initial update
+        updatePercentage();
+    </script>
+
+    <script>
+        let freeze = false;
+        let stop = false;
+    </script>
+
+    <div class="player" id="player-container">
+        <button class="play"></button>
+        <button class="pause hidden"></button>
+
+        <script>
+            const player = document.querySelector('.player');
+
+            function clickHandler() {
+                const buttons = Array.from(this.children);
+                buttons.forEach(button => button.classList.toggle('hidden'))
+                stop = !stop
+            }
+
+            player.addEventListener('click', clickHandler);
+        </script>
+    </div>
+
+    <!-- Alert -->
+    <div class="alert-container" id="alert-container">
+        <script src="{{ url_for('static', filename='js/alert.js') }}"></script>
+        <button class="btn btn-warning first" id="warning-btn">Trigger Fall</button>
+        <script>
+            var warning = document.getElementById("warning-btn");
+            warning.addEventListener("click", () => {
+                fetch('/add_fall/1', {
+                    method: 'POST',
+                })
+                cuteAlert({
+                    type: "warning",
+                    title: "Fall Detected!",
+                    message: `Patient Max Mustermann<br> has fallen at location:<br> 49.87594851805438, 8.656191738871787<br> time: ${new Date().toISOString().slice(0, 19).replace('T', ' ')}`,
+                    buttonText: "Help is on the way!"
+                })
+            })
+
+            function simulateFallButtonClick() {
+                warning.click();
+            }
+        </script>
+    </div>
+</div>
+<!-- Plot -->
+<h1>Accelerometer</h1>
+<div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <canvas id="plot"></canvas>
+    <script src="{{ url_for('static', filename='js/plot.js') }}"></script>
+</div>
+<style>
+    #fallStatus {
+        text-align: center;
+        font-weight: bold;
+        font-size: 18px;
+    }
+</style>
+<p id="fallStatus"></p>
+
+<!-- Patients -->
+<h1>Patients</h1>
+<div>
+    <table>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for patient in patients %}
+            <tr>
+                <td>{{ patient.id }}</td>
+                <td>{{ patient.name }}</td>
+                <td><a href="#" onclick="viewHistory({{ patient.id }})">View History</a></td>
+                <script>
+                    function viewHistory(patientId) {
+                        // Make an asynchronous request to fetch the falls for the selected patient
+                        fetch(`/history/${patientId}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                const fallHistoryContainer = document.getElementById('fallHistoryContainer');
+                                fallHistoryContainer.innerHTML = `<ul>{% for fall in falls %} <li>{{ fall.timestamp }}</li>{% endfor %}</ul>`;
+                            })
+                            .catch(error => {
+                                console.error('Error fetching falls:', error);
+                            });
+                    }
+                </script>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+<div id="fallHistoryContainer">
+
+</div>
+
+</body>
+</html>
