@@ -1,8 +1,7 @@
 .battery-container {
     position: relative;
     text-align: center;
-    margin-left: 10px;
-    margin-right: 40px;
+    transform: scale(0.5, 0.5);
 }
 
 .battery {
@@ -54,7 +53,7 @@
     height: 88px;
     background-color: royalblue;
     border-radius: 5px;
-    animation: full 1s linear infinite;
+    animation: full 2s linear infinite;
 }
 
 @keyframes full {
