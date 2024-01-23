@@ -17,9 +17,10 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            margin-top: 20px; /* Adjust as needed */
+            /* margin-top: 10px; /* Adjust as needed */
         }
 
+        .centered-row .logo,
         .centered-row .player-container,
         .centered-row .LED-container,
         .centered-row .battery-container,
@@ -30,8 +31,8 @@
 
 </head>
 <body>
-
 <div class="centered-row">
+    <img src="static/images/logo.png" alt="Description of the image" width="25%" height="auto" id="logo">
     <!-- LED -->
     <div class="LED-container clearfix" id="LED-container">
         {% if connected %}
@@ -92,6 +93,7 @@
     </script>
 
     <!-- Battery -->
+
     <div class="battery-container" id="battery-container">
         {% if loading %}
             <div class="battery dynamic"></div>
@@ -100,6 +102,7 @@
         {% endif %}
         <div class="battery-percentage">{{ battery_percentage }}%</div>
     </div>
+
     <script>
         function updatePercentage() {
             // Make an asynchronous request to the Flask server
@@ -126,6 +129,7 @@
     <script>
         let freeze = false;
         let stop = false;
+        let displayed = -1;
     </script>
 
     <div class="player" id="player-container">
@@ -170,7 +174,7 @@
     </div>
 </div>
 <!-- Plot -->
-<h1>Accelerometer</h1>
+<h1 style="font-family:open sans; text-align: center;">Accelerometer</h1>
 <div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
     <canvas id="plot"></canvas>
@@ -180,13 +184,13 @@
     #fallStatus {
         text-align: center;
         font-weight: bold;
-        font-size: 18px;
+        font-size: 24px;
     }
 </style>
 <p id="fallStatus"></p>
 
 <!-- Patients -->
-<h1>Patients</h1>
+<h1 style="font-family:open sans; text-align: center;">Patients</h1>
 <div>
     <table>
         <thead>
@@ -202,20 +206,6 @@
                 <td>{{ patient.id }}</td>
                 <td>{{ patient.name }}</td>
                 <td><a href="#" onclick="viewHistory({{ patient.id }})">View History</a></td>
-                <script>
-                    function viewHistory(patientId) {
-                        // Make an asynchronous request to fetch the falls for the selected patient
-                        fetch(`/history/${patientId}`)
-                            .then(response => response.json())
-                            .then(data => {
-                                const fallHistoryContainer = document.getElementById('fallHistoryContainer');
-                                fallHistoryContainer.innerHTML = `<ul>{% for fall in falls %} <li>{{ fall.timestamp }}</li>{% endfor %}</ul>`;
-                            })
-                            .catch(error => {
-                                console.error('Error fetching falls:', error);
-                            });
-                    }
-                </script>
             </tr>
         {% endfor %}
         </tbody>
@@ -224,6 +214,28 @@
 <div id="fallHistoryContainer">
 
 </div>
-
+<script>
+    function viewHistory(patientId) {
+        // Make an asynchronous request to fetch the falls for the selected patient
+        fetch(`/history/${patientId}`)
+            .then(response => response.json())
+            .then(data => {
+                const fallHistoryContainer = document.getElementById('fallHistoryContainer');
+                if (displayed === -1) {
+                    displayed = patientId;
+                    fallHistoryContainer.innerHTML = `<ul>${data.falls.map(fall => `<li>${fall.timestamp}</li>`).join('')}</ul>`;
+                } else if (displayed === patientId) {
+                    displayed = -1;
+                    fallHistoryContainer.innerHTML = '';
+                } else {
+                    displayed = patientId;
+                    fallHistoryContainer.innerHTML = `<ul>${data.falls.map(fall => `<li>${fall.timestamp}</li>`).join('')}</ul>`;
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching falls:', error);
+            });
+    }
+</script>
 </body>
 </html>

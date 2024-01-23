@@ -1,5 +1,5 @@
 :root {
-    --button-height: 2rem;
+    --button-height: 1rem;
     --button-color: black;
 }
 
@@ -7,9 +7,9 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 4rem;
-    height: 4rem;
-    padding: 2rem;
+    width: 2rem;
+    height: 2rem;
+    padding: 1rem;
     border: 0.2rem solid var(--button-color);
     border-radius: 50%;
     filter: drop-shadow(0 0 3.1rem rgba(255, 255, 255, 0.8));

@@ -1,5 +1,4 @@
 .btn {
-
     box-sizing: border-box;
     appearance: none;
     background-color: transparent;
@@ -12,7 +11,7 @@
     font-size: 1rem;
     line-height: 1;
     margin: 20px;
-    padding: 1.2em 2.8em;
+    padding: 0.8em 2em;
     text-decoration: none;
     text-align: center;
     text-transform: uppercase;
