@@ -47,7 +47,7 @@ class Fall(db.Model):
 
 @app.route('/add_patient', methods=['POST'])
 def add_patient():
-    name = "Max Mustermann"  # request.form.get('name')
+    name = "Ayman Kabawa"  # request.form.get('name')
     patient = Patient(name=name)
     db.session.add(patient)
     db.session.commit()
@@ -75,7 +75,7 @@ def history(patient_id):
 @socketio.on('get_measurements')
 def get_measurements():
     while True:
-        data = [random.randint(0, 100), random.randint(0, 100), random.randint(0, 100)]
+        data = [random.randint(-4, 4), random.randint(-4, 4), random.randint(-4, 4)]
         socketio.emit('measurements', {'data': data, 'classification': random.choice([True, False])})
         time.sleep(0.1)
 
