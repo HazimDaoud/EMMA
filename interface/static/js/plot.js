@@ -41,13 +41,21 @@ document.addEventListener('DOMContentLoaded', function () {
                 x: {
                     type: 'linear',
                     position: 'bottom',
-                    min: 0,                  // Set the minimum value for the x-axis
-                    max: datapoints_to_display,  // Set the maximum value for the x-axis
+                    min: 0,
+                    max: datapoints_to_display,
+                    title: {
+                        display: true,
+                        text: '# samples'
+                    }
                 },
                 y: {
                     type: 'linear',
-                    suggestedMin: -1,    // Set the minimum value for the y-axis
-                    suggestedMax: 1,     // Set the maximum value for the y-axis
+                    suggestedMin: -4,
+                    suggestedMax: 4,
+                    title: {
+                        display: true,
+                        text: 'acceleration [g]'
+                    }
                 }
             },
             datasets: {
@@ -82,12 +90,12 @@ document.addEventListener('DOMContentLoaded', function () {
             myChart.data.datasets[2].data.shift();
         }
         // Calculate the minimum and maximum values from the data
-        const minValue = Math.min(...myChart.data.datasets.flatMap(dataset => dataset.data));
-        const maxValue = Math.max(...myChart.data.datasets.flatMap(dataset => dataset.data));
+        //const minValue = Math.min(...myChart.data.datasets.flatMap(dataset => dataset.data));
+        //const maxValue = Math.max(...myChart.data.datasets.flatMap(dataset => dataset.data));
 
         // Update the y-axis boundaries
-        myChart.options.scales.y.suggestedMin = minValue - 1; // Adding a buffer
-        myChart.options.scales.y.suggestedMax = maxValue + 1; // Adding a buffer
+        //myChart.options.scales.y.suggestedMin = minValue - 1; // Adding a buffer
+        //myChart.options.scales.y.suggestedMax = maxValue + 1; // Adding a buffer
         if (!stop) {
             myChart.update();
             var fallStatus = document.getElementById('fallStatus');
