@@ -93,7 +93,6 @@
     </script>
 
     <!-- Battery -->
-
     <div class="battery-container" id="battery-container">
         {% if loading %}
             <div class="battery dynamic"></div>
@@ -162,9 +161,10 @@
                 cuteAlert({
                     type: "warning",
                     title: "Fall Detected!",
-                    message: `Patient Max Mustermann<br> has fallen at location:<br> 49.87594851805438, 8.656191738871787<br> time: ${new Date().toISOString().slice(0, 19).replace('T', ' ')}`,
+                    message: `Patient Ayman Kabawa<br> has fallen at location:<br> 49.87594851805438, 8.656191738871787<br> time: ${new Date().toISOString().slice(0, 19).replace('T', ' ')}`,
                     buttonText: "Help is on the way!"
                 })
+                update_history();
             })
 
             function simulateFallButtonClick() {
@@ -173,6 +173,7 @@
         </script>
     </div>
 </div>
+
 <!-- Plot -->
 <h1 style="font-family:open sans; text-align: center;">Accelerometer</h1>
 <div>
@@ -189,9 +190,27 @@
 </style>
 <p id="fallStatus"></p>
 
-<!-- Patients -->
+<style>
+    #patientWrapper {
+        display: flex;
+        justify-content: center;
+       /* align-items: center;*/
+    }
+
+    #fallHistoryContainer {
+        width: 25%; /* Adjust the width as needed */
+        margin-top: -20px;
+    }
+    #patientsContainer {
+        width: 50%; /* Adjust the width as needed */
+    }
+
+</style>
+
 <h1 style="font-family:open sans; text-align: center;">Patients</h1>
-<div>
+<div id="patientWrapper">
+<!-- Patients -->
+<div id="patientsContainer">
     <table>
         <thead>
         <tr>
@@ -236,6 +255,16 @@
                 console.error('Error fetching falls:', error);
             });
     }
+
+    function update_history() {
+        if (displayed !== -1) {
+            tmp = displayed
+            viewHistory(displayed);
+            displayed=tmp
+            viewHistory(displayed);
+        }
+    }
 </script>
+</div>
 </body>
 </html>
