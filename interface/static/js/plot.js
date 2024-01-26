@@ -14,21 +14,21 @@ document.addEventListener('DOMContentLoaded', function () {
                     label: 'X',
                     data: Array(datapoints_to_display).fill(0),
                     fill: false,
-                    borderColor: 'red',
+                    borderColor: '#fc4f46d2',
                     borderWidth: 2
                 },
                 {
                     label: 'Y',
                     data: Array(datapoints_to_display).fill(0),
                     fill: false,
-                    borderColor: 'green',
+                    borderColor: '#628B61',
                     borderWidth: 2
                 },
                 {
                     label: 'Z',
                     data: Array(datapoints_to_display).fill(0),
                     fill: false,
-                    borderColor: 'blue',
+                    borderColor: '#2f3c7e',
                     borderWidth: 2
                 }
             ]
@@ -102,11 +102,11 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         fallStatus.innerText = data.classification ? 'Fall detected!' : 'All right!';
-        fallStatus.style.color = data.classification ? 'red' : 'green';
+        fallStatus.style.color = data.classification ? '#fc4f46d2': '#628B61';
         if (!freeze && data.classification) {
             // Simulate a fall button click
-            freeze = true
-            //simulateFallButtonClick();
+            freeze = true;
+            simulateFallButtonClick();
         }
     });
 });

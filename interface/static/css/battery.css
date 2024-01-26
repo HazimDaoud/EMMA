@@ -8,7 +8,7 @@
     position: relative;
     margin: 0 auto;
     width: 300px;
-    border: 10px solid royalblue;
+    border: 10px solid #628B61;
     height: 100px;
     border-radius: 15px;
 }
@@ -29,7 +29,7 @@
     top: 28px;
     width: 15px;
     height: 50px;
-    background-color: royalblue;
+    background-color: #628B61;
     border-bottom-right-radius: 90px;
     border-top-right-radius: 90px;
 }
@@ -40,7 +40,7 @@
     top: 6px;
     left: 6px;
     height: 88px;
-    background-color: royalblue;
+    background-color: #628B61;
     border-radius: 5px;
     width: calc(var(--battery-percentage) * 0.96%);
 }
@@ -51,7 +51,7 @@
     top: 6px;
     left: 6px;
     height: 88px;
-    background-color: royalblue;
+    background-color: #628B61;
     border-radius: 5px;
     animation: full 2s linear infinite;
 }

@@ -10,6 +10,8 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/table.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/play.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/button.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/background.css') }}">
+    <link href='https://fonts.googleapis.com/css?family=Playfair Display' rel='stylesheet'>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
@@ -24,15 +26,73 @@
         .centered-row .player-container,
         .centered-row .LED-container,
         .centered-row .battery-container,
+        /* 
+        .centered-row .device_name,
+        */
         .centered-row .alert-container {
             margin: auto; /* Adjust spacing between elements as needed */
         }
+        body {
+    font-family: 'Playfair Display';
+}
     </style>
 
 </head>
 <body>
+    
+     <!-- Background -->   
+<div class="bg" id = "bg_color"></div>
+<div class="bg bg2"></div>
+<div class="bg bg3"></div>
+
+
+   
+
 <div class="centered-row">
     <img src="static/images/logo.png" alt="Description of the image" width="25%" height="auto" id="logo">
+   
+
+    <!-- Device Name -->
+    <div class="content_small" id = "device_name">
+        Device:None
+    </div>
+
+
+   
+
+     <!-- Connect Button -->
+     <div>
+        <button class="btn " id="connect-btn">Connect</button>
+    </div>
+    
+     <!-- Trigger -->
+     <div>
+        <button class= "btn" id="warning-btn">Trigger Fall</button>
+    </div>
+
+     
+
+    <!-- Player -->
+    <div class="player" id="player-container">
+        <button class="play"></button>
+        <button class="pause hidden"></button>
+
+        <script>
+            const player = document.querySelector('.player');
+
+            function clickHandler() {
+                const buttons = Array.from(this.children);
+                buttons.forEach(button => button.classList.toggle('hidden'))
+                stop = !stop
+            }
+
+            player.addEventListener('click', clickHandler);
+        </script>
+    </div>
+
+    
+   
+    
     <!-- LED -->
     <div class="LED-container clearfix" id="LED-container">
         {% if connected %}
@@ -51,47 +111,6 @@
             <p>Connecting...</p>
         </div>
     </div>
-
-    <script>
-        function updateConnection() {
-            // Make an asynchronous request to the Flask server
-            fetch('/update_led ')
-                .then(response => response.json())
-                .then(data => {
-                    const ledContainer = document.getElementById('LED-container');
-
-                    if (data.connected === null) {
-                        ledContainer.innerHTML = `
-                        <div class="led-box">
-                            <div class="led-yellow"></div>
-                            <p>Connecting...</p>
-                        </div>`;
-                    } else if (data.connected) {
-                        ledContainer.innerHTML = `
-                        <div class="led-box">
-                            <div class="led-green"></div>
-                            <p>Connected</p>
-                        </div>`;
-                    } else {
-                        ledContainer.innerHTML = `
-                        <div class="led-box">
-                            <div class="led-red"></div>
-                            <p>Disconnected</p>
-                        </div>`;
-                    }
-                })
-                .catch(error => {
-                    console.error('Error fetching connection:', error);
-                });
-        }
-
-        // Update the random number every second
-        setInterval(updateConnection, 1000);
-
-        // Initial update
-        updateConnection();
-    </script>
-
     <!-- Battery -->
     <div class="battery-container" id="battery-container">
         {% if loading %}
@@ -101,79 +120,149 @@
         {% endif %}
         <div class="battery-percentage">{{ battery_percentage }}%</div>
     </div>
+    
+   
+    
 
+    
+    <!-- COnnect BLE -->
+<div class="alert" id="connect-container">
+    <script src="{{ url_for('static', filename='js/alert.js') }}"></script>
+    
     <script>
-        function updatePercentage() {
-            // Make an asynchronous request to the Flask server
-            fetch('/update_battery ')
-                .then(response => response.json())
-                .then(data => {
-                    const batteryContainer = document.getElementById('battery-container');
-                    batteryContainer.innerHTML = `
-                        <div class="${data.loading ? 'battery dynamic' : 'battery static'}" style="--battery-percentage: ${data.percentage};"></div>
-                        <div class="battery-percentage">${data.percentage}%</div>`;
-                })
-                .catch(error => {
-                    console.error('Error fetching battery:', error);
-                });
-        }
-
-        // Update the random number every second
-        setInterval(updatePercentage, 1000);
-
-        // Initial update
-        updatePercentage();
+        var conn_btn = document.getElementById("connect-btn");
+        conn_btn.addEventListener("click", () => {
+            fetch('/connect')
+           
+        })
+        
     </script>
-
-    <script>
-        let freeze = false;
-        let stop = false;
-        let displayed = -1;
-    </script>
-
-    <div class="player" id="player-container">
-        <button class="play"></button>
-        <button class="pause hidden"></button>
-
-        <script>
-            const player = document.querySelector('.player');
-
-            function clickHandler() {
-                const buttons = Array.from(this.children);
-                buttons.forEach(button => button.classList.toggle('hidden'))
-                stop = !stop
-            }
-
-            player.addEventListener('click', clickHandler);
-        </script>
-    </div>
-
-    <!-- Alert -->
-    <div class="alert-container" id="alert-container">
-        <script src="{{ url_for('static', filename='js/alert.js') }}"></script>
-        <button class="btn btn-warning first" id="warning-btn">Trigger Fall</button>
-        <script>
-            var warning = document.getElementById("warning-btn");
-            warning.addEventListener("click", () => {
-                fetch('/add_fall/1', {
-                    method: 'POST',
-                })
-                cuteAlert({
-                    type: "warning",
-                    title: "Fall Detected!",
-                    message: `Patient Ayman Kabawa<br> has fallen at location:<br> 49.87594851805438, 8.656191738871787<br> time: ${new Date().toISOString().slice(0, 19).replace('T', ' ')}`,
-                    buttonText: "Help is on the way!"
-                })
-                update_history();
-            })
-
-            function simulateFallButtonClick() {
-                warning.click();
-            }
-        </script>
-    </div>
 </div>
 
+<script>
+    function updateConnection() {
+        // Make an asynchronous request to the Flask server
+        fetch('/update_led ')
+            .then(response => response.json())
+            .then(data => {
+                const ledContainer = document.getElementById('LED-container');
+                var conn_btn = document.getElementById("connect-btn");
+                
+                if (data.connected === null) {
+                    ledContainer.innerHTML = `
+                        <div class="led-box">
+                            <div class="led-yellow"></div>
+                            <p>Connecting...</p>
+                        </div>`;
+                } else if (data.connected) {
+                    ledContainer.innerHTML = `
+                        <div class="led-box">
+                            <div class="led-green"></div>
+                            <p>Connected</p>
+                        </div>`;
+                        conn_btn.innerText = 'Disconnect';
+                } else {
+                    ledContainer.innerHTML = `
+                        <div class="led-box">
+                            <div class="led-red"></div>
+                            <p>Disconnected</p>
+                        </div>`;
+                        conn_btn.innerText = 'Connect';
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching connection:', error);
+            });
+    }
+
+    // Update the random number every second
+    setInterval(updateConnection, 1000);
+
+    // Initial update
+    updateConnection();
+</script>
+
+<script>
+    function updateDevice(){
+        //call the name of the connected Device
+        fetch('/update_device')
+        .then(response => response.json())
+        .then (data =>{
+            const nameContainer = document.getElementById('device_name');
+            nameContainer.innerHTML = 'Device: ' + data.device ;
+            });
+        
+    }
+        setInterval(updateDevice,1000);
+        updateDevice();     
+
+    
+</script>
+
+<script>
+    function updatePercentage() {
+        // Make an asynchronous request to the Flask server
+        fetch('/update_battery ')
+            .then(response => response.json())
+            .then(data => {
+                const batteryContainer = document.getElementById('battery-container');
+                batteryContainer.innerHTML = `
+                        <div class="${data.loading ? 'battery dynamic' : 'battery static'}" style="--battery-percentage: ${data.percentage};"></div>
+                        <div class="battery-percentage">${data.percentage}%</div>`;
+            })
+            .catch(error => {
+                console.error('Error fetching battery:', error);
+            });
+            
+            // const bgContainer = document.getElementById('bg_color');
+            
+    }
+
+    // Update the random number every second
+    setInterval(updatePercentage, 1000);
+
+    // Initial update
+    updatePercentage();
+</script>
+
+<script>
+    let freeze = false;
+    let stop = false;
+    let displayed = -1;
+</script>
+
+
+
+
+
+ <!-- Alert -->
+<div class="alert-container" id="alert-container">
+    <script src="{{ url_for('static', filename='js/alert.js') }}"></script>
+    
+    <script>
+        var warning = document.getElementById("warning-btn");
+        warning.addEventListener("click", () => {
+            fetch('/add_fall/1', {
+                method: 'POST',
+            })
+            cuteAlert({
+                type: "warning",
+                title: "Fall Detected!",
+                message: `Patient Ayman Kabawa<br> has fallen at location:<br> 49.87594851805438, 8.656191738871787<br> time: ${new Date().toISOString().slice(0, 19).replace('T', ' ')}`,
+                buttonText: "Help is on the way!"
+            })
+            update_history();
+        })
+
+        function simulateFallButtonClick() {
+            warning.click();
+        }
+    </script>
+</div>
+
+</div>
+
+ 
 <!-- Plot -->
 <h1 style="font-family:open sans; text-align: center;">Accelerometer</h1>
 <div>
@@ -207,10 +296,12 @@
 
 </style>
 
+<section>
 <h1 style="font-family:open sans; text-align: center;">Patients</h1>
 <div id="patientWrapper">
 <!-- Patients -->
 <div id="patientsContainer">
+    <div class="tbl-header">
     <table>
         <thead>
         <tr>
@@ -219,6 +310,7 @@
             <th>Action</th>
         </tr>
         </thead>
+    </div>
         <tbody>
         {% for patient in patients %}
             <tr>
@@ -233,6 +325,7 @@
 <div id="fallHistoryContainer">
 
 </div>
+</section>
 <script>
     function viewHistory(patientId) {
         // Make an asynchronous request to fetch the falls for the selected patient
@@ -265,6 +358,7 @@
         }
     }
 </script>
+</div>
 </div>
 </body>
 </html>

@@ -105,7 +105,12 @@
             fetch('/connect')
             .then(response => response.json())
             .then(data => {
-                conn_btn.innerHTML = data.connected
+                if (data.connected){
+                    conn_btn.innerHTML = 'Disconnect';
+                }
+                else{
+                    conn_btn.innerHTML = 'Connect';
+                }
             })
            /*
             fetch('/scan_BLE')
