@@ -15,10 +15,12 @@ global data_buffer
 global classification
 global battery_percentage
 global device_name
+global prev_classification
+prev_classification = False
 connected = False
 data_buffer = [0,0,0]
 classification = False
-battery_percentage = 0
+battery_percentage = 69
 device_name = "None"
 
 
@@ -40,7 +42,7 @@ def main():
 
 @app.route('/update_battery')
 def get_battery_percentage():
-    return jsonify({'percentage': get_battery(), 'loading': random.choice([True, False])})
+    return jsonify({'percentage': get_battery(), 'loading': False})
 
 @app.route('/update_device')
 def get_device_name():
@@ -73,9 +75,10 @@ async def ble_connection():
     
     async with bleak.BleakClient(device.address) as client:
         connected = True #once its connected
+        
         await client.start_notify("00002A56-0000-1000-8000-00805f9b34fb", handle_notification)
         await client.start_notify("00002A50-0000-1000-8000-00805f9b34fb", handle_notification_fall)
-        #await client.start_notify("00002A55-0000-1000-8000-00805f9b34fb", handle_notification_battery)
+        ##await client.start_notify("00002A55-0000-1000-8000-00805f9b34fb", handle_notification_battery)
         while connected: # currently hears what arduino is sending
             await asyncio.sleep(1) #could change frequency of readings 
         await client.stop_notify("00002A56-0000-1000-8000-00805f9b34fb")
@@ -112,8 +115,15 @@ def post_prediction(prediction):
     classification = prediction
     return jsonify({'prediction':classification})
 
+def get_prev_classification():
+    global prev_classification
+    return prev_classification
+
 def set_prediction(prediction):
     global classification
+    global prev_classification
+
+    prev_classification = classification
     classification = prediction
     #return jsonify({"prediction":prediction})
 def get_device():
@@ -211,7 +221,7 @@ def get_measurements():
     while True: #need to change this for it to only work when connected
         data = get_data()
         prediction = get_predict()
-        socketio.emit('measurements', {'data': data, 'classification': prediction})
+        socketio.emit('measurements', {'data': data, 'classification': prediction,'prev':get_prev_classification(), 'status': connected})
         time.sleep(0.1)
         
 

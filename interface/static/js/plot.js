@@ -103,7 +103,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         fallStatus.innerText = data.classification ? 'Fall detected!' : 'All right!';
         fallStatus.style.color = data.classification ? '#fc4f46d2': '#628B61';
-        if (!freeze && data.classification) {
+        if (!freeze && data.classification && data.status && !data.prev) {
             // Simulate a fall button click
             freeze = true;
             simulateFallButtonClick();

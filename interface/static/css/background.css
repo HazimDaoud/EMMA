@@ -107,7 +107,7 @@ html {
     flex-direction: row;
     align-items: center;
     cursor: pointer;
-    text-transform: lowercase;
+    
     height: 50px;
     width: 80%;
     
