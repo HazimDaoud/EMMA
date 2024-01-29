@@ -2,27 +2,12 @@ import asyncio
 import aioconsole
 import os
 from bleak import BleakClient
-from bleak import discover
 import sys
 
-# my global variables
+# global variables
 label = "normal"
 label_index = "0"
 recording = True
-
-
-# async def scan_near(): #could end up changing later for automatic detection of device
-#     found = False
-#     scanned = await discover()
-
-#     for device in scanned:
-#         if 'Arduino Datanauts' in device.name:
-#             print('Found Arduino Datanauts device')
-#             found = True
-#     if found:
-#         asyncio.sleep(10000)
-#     else:
-#         asyncio.sleep(10)
 
 
 def handle_notification(sender, data): 
