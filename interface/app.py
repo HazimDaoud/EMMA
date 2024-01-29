@@ -75,12 +75,12 @@ async def ble_connection():
         connected = True #once its connected
         await client.start_notify("00002A56-0000-1000-8000-00805f9b34fb", handle_notification)
         await client.start_notify("00002A50-0000-1000-8000-00805f9b34fb", handle_notification_fall)
-        await client.start_notify("00002A55-0000-1000-8000-00805f9b34fb", handle_notification_battery)
+        #await client.start_notify("00002A55-0000-1000-8000-00805f9b34fb", handle_notification_battery)
         while connected: # currently hears what arduino is sending
             await asyncio.sleep(1) #could change frequency of readings 
         await client.stop_notify("00002A56-0000-1000-8000-00805f9b34fb")
         await client.stop_notify("00002A50-0000-1000-8000-00805f9b34fb")
-        await client.stop_notify("00002A55-0000-1000-8000-00805f9b34fb")
+        #await client.stop_notify("00002A55-0000-1000-8000-00805f9b34fb")
 
     return jsonify({'connected':connected})
 
