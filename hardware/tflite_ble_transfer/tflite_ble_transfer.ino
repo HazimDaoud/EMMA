@@ -28,11 +28,11 @@ byte tensorArena[tensorArenaSize] __attribute__((aligned(16)));
 
 // Global variables
 float aX, aY, aZ;
-const float accelerationThreshold = 0.35; // threshold of significant in G's
+const float accelerationThreshold = 0.315; // threshold of significant in G's
 int samplesRead = 200;
 String data, data_fall;
 
-// Array to map different fall cases
+// array to map indices to a name
 const char* Activites[] = 
 {
   "FALL",
@@ -55,7 +55,7 @@ void setup()
     while (1);
   }
   
-  // Sets bluetooth connection settings
+  // Set bluetooth connection settings
   BLE.setLocalName("Arduino Datanauts"); 
   BLE.setAdvertisedService(customService);
   customService.addCharacteristic(ble_sensor);
@@ -65,7 +65,7 @@ void setup()
   BLE.addService(customService);
   BLE.advertise();
 
-  // Gets the TFL representation of the model byte array
+  // get the TFL representation of the model byte array
   tflModel = tflite::GetModel(model);
   if (tflModel->version() != TFLITE_SCHEMA_VERSION) 
   {
@@ -141,7 +141,7 @@ String detectFall()
   Serial.print(": ");
   Serial.println(adl, 3);
 
-  if (fall > adl)
+  if (fall > 0.7)
   {
     return "1";
   }
