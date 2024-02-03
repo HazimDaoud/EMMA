@@ -28,7 +28,7 @@ byte tensorArena[tensorArenaSize] __attribute__((aligned(16)));
 
 // Global variables
 float aX, aY, aZ;
-const float accelerationThreshold = 0.315; // threshold of significant in G's
+const float accelerationThreshold = 0.28; // threshold of significant in G's
 int samplesRead = 200;
 String data, data_fall;
 
@@ -100,9 +100,9 @@ bool readAccelerator()
  */
 bool addInputTensor()
 {
-  tflInputTensor->data.f[samplesRead * 3 + 0] = (aX + 1.936838) / (1.974911 + 1.936838);
-  tflInputTensor->data.f[samplesRead * 3 + 1] = (aY + 1.942696) / (1.991507 + 1.942696);
-  tflInputTensor->data.f[samplesRead * 3 + 2] = (aZ + 1.874360) / (1.991507 + 1.874360);
+  tflInputTensor->data.f[samplesRead * 3 + 0] = (aX + 1.93) / (1.97 +1.93);
+  tflInputTensor->data.f[samplesRead * 3 + 1] = (aY + 1.94) / (1.99 +1.94);
+  tflInputTensor->data.f[samplesRead * 3 + 2] = (aZ + 1.87) / (1.99 +1.87);
 }
 
 /*
@@ -140,8 +140,8 @@ String detectFall()
   Serial.print(Activites[1]);
   Serial.print(": ");
   Serial.println(adl, 3);
-
-  if (fall > 0.7)
+ 
+  if (fall >= 0.6)
   {
     return "1";
   }
@@ -169,11 +169,13 @@ void loop()
           ble_sensor.writeValue(data.c_str());  // Sends accelerations
 
           addInputTensor();
+       
           samplesRead++;
 
           if (samplesRead == 200) 
           {
             // Run inference
+            
             TfLiteStatus invokeStatus = tflInterpreter->Invoke();
 
             if (invokeStatus != kTfLiteOk) 
@@ -185,6 +187,7 @@ void loop()
             data_fall = detectFall();
             fall_sensor.writeValue(data_fall.c_str());  // Sends fall prediction
           }
+          
         }
       }  
     }

@@ -16,11 +16,13 @@ global classification
 global battery_percentage
 global device_name
 global prev_classification
+global new_prediction
+new_prediction = False
 prev_classification = False
 connected = False
 data_buffer = [0,0,0]
 classification = False
-battery_percentage = 69
+battery_percentage = 42
 device_name = "None"
 
 
@@ -61,6 +63,7 @@ async def connect_disconnect():
         
     else:
         await ble_connection()
+        set_battery(42)
     #connected = not connected
     return jsonify({'connected':connected})
 
@@ -115,6 +118,14 @@ def post_prediction(prediction):
     classification = prediction
     return jsonify({'prediction':classification})
 
+def get_new_prediction():
+    global new_prediction
+    return new_prediction
+
+def set_new_prediction(new):
+    global new_prediction
+    new_prediction = new
+
 def get_prev_classification():
     global prev_classification
     return prev_classification
@@ -123,6 +134,7 @@ def set_prediction(prediction):
     global classification
     global prev_classification
 
+    set_new_prediction(True)
     prev_classification = classification
     classification = prediction
     #return jsonify({"prediction":prediction})
@@ -221,7 +233,8 @@ def get_measurements():
     while True: #need to change this for it to only work when connected
         data = get_data()
         prediction = get_predict()
-        socketio.emit('measurements', {'data': data, 'classification': prediction,'prev':get_prev_classification(), 'status': connected})
+        socketio.emit('measurements', {'data': data, 'classification': prediction,'prev':get_prev_classification(), 'status': connected,'new_pred':get_new_prediction()})
+        set_new_prediction(False)
         time.sleep(0.1)
         
 

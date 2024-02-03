@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function () {
-    var datapoints_to_display = 100
+    var datapoints_to_display = 200
     var ctx = document.getElementById("plot").getContext('2d');
 
     //ctx.canvas.width = 800;
@@ -103,7 +103,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         fallStatus.innerText = data.classification ? 'Fall detected!' : 'All right!';
         fallStatus.style.color = data.classification ? '#fc4f46d2': '#628B61';
-        if (!freeze && data.classification && data.status && !data.prev) {
+        if (!freeze && data.classification && data.new_pred && !data.prev ) {
             // Simulate a fall button click
             freeze = true;
             simulateFallButtonClick();
