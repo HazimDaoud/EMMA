@@ -98,11 +98,14 @@ document.addEventListener('DOMContentLoaded', function () {
         //myChart.options.scales.y.suggestedMax = maxValue + 1; // Adding a buffer
         if (!stop) {
             myChart.update();
-            var fallStatus = document.getElementById('fallStatus');
+            var fallStatusArduino = document.getElementById('fallStatusArduino');
+            var fallStatusInterface = document.getElementById('fallStatusInterface');
         }
 
-        fallStatus.innerText = data.classification ? 'Fall detected!' : 'All right!';
-        fallStatus.style.color = data.classification ? '#fc4f46d2': '#628B61';
+        fallStatusArduino.innerText = data.classification ? 'Fall detected!(Arduino)' : 'All right!';
+        fallStatusArduino.style.color = data.classification ? '#fc4f46d2': '#628B61';
+        fallStatusInterface.innerText = data.other_pred ? 'Fall detected! (Interface)' : 'All right!';
+        fallStatusInterface.style.color = data.other_pred ? '#fc4f46d2': '#628B61';
         if (!freeze && data.classification && data.new_pred && !data.prev ) {
             // Simulate a fall button click
             freeze = true;

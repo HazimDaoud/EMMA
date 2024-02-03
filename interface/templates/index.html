@@ -271,13 +271,23 @@
     <script src="{{ url_for('static', filename='js/plot.js') }}"></script>
 </div>
 <style>
-    #fallStatus {
+    #fallStatusArduino {
+        text-align: center;
+        font-weight: bold;
+        
+        font-weight: bold;
+        font-size: 24px;
+    }
+</style>
+<p id="fallStatusArduino"></p>
+<style>
+    #fallStatusInterface {
         text-align: center;
         font-weight: bold;
         font-size: 24px;
     }
 </style>
-<p id="fallStatus"></p>
+<p id="fallStatusInterface"></p>
 
 <style>
     #patientWrapper {

@@ -9,6 +9,7 @@ import bleak
 from bleak import BleakScanner
 from bleak import BleakClient
 import asyncio
+from tensorflow.keras import models
 
 global connected 
 global data_buffer
@@ -17,6 +18,13 @@ global battery_percentage
 global device_name
 global prev_classification
 global new_prediction
+global store_data
+global modelpath
+global myModel
+
+modelpath = "software/savedModels/newModel.h5"
+myModel = models.load_model(modelpath)
+store_data = np.zeros((3,200))
 new_prediction = False
 prev_classification = False
 connected = False
@@ -103,14 +111,21 @@ def handle_notification_fall(sender:str, data:bytearray):
     set_prediction(data_read)
 
 def handle_notification(sender:str, data:bytearray):
+    global store_data
     prev_data = get_data()
     data_read = data.decode()
+   
     data_read = np.fromstring(data_read, dtype=float, sep=',') #incoming data as an array
+
+    
 
     for i in range(3): #update 3 for the 6 after we send more data
         prev_data[i]= data_read[i]
+        store_data[i]= np.roll(store_data[i],-1)
+        store_data[i][-1] = data_read[i]
 
     set_data(data=prev_data)
+    
 
 @app.post('/trigger_prediction/<int:prediction>')
 def post_prediction(prediction):
@@ -165,6 +180,9 @@ def get_battery():
     global battery_percentage
     return battery_percentage
 
+def get_store_data():
+    global store_data
+    return store_data
    
 async def ble_scan():
     scanned = await bleak.BleakScanner.discover()
@@ -233,10 +251,40 @@ def get_measurements():
     while True: #need to change this for it to only work when connected
         data = get_data()
         prediction = get_predict()
-        socketio.emit('measurements', {'data': data, 'classification': prediction,'prev':get_prev_classification(), 'status': connected,'new_pred':get_new_prediction()})
+        python_prediction = makePrediction() #interface prediction
+            
+        socketio.emit('measurements', {'data': data, 'classification': prediction,'prev':get_prev_classification(), 'status': connected,'new_pred':get_new_prediction(),'other_pred':python_prediction})
         set_new_prediction(False)
         time.sleep(0.1)
-        
+
+ 
+
+def makePrediction():
+    global myModel
+    """here the model predicts a window and sends both probabilities to the makeDecision function.
+
+    Args:
+        myWindow (array): thw window that the model will predict on
+        myModel (keras sequential model): the .h5 model 
+    """    
+    #win2 = np.array(myWindow)
+    #win2Reshaped = win2.reshape((1,200,3))
+    data = get_store_data()
+  
+    data = np.transpose(data)
+   
+    data = data.reshape((1,200,3))
+   
+    
+    prediction = myModel.predict(data)
+    predictAdl = prediction[0][0]
+    predictFall = prediction[0][1]
+   
+    pred = 0
+    if predictAdl < predictFall:
+        pred = 1
+    return pred
+    
 
 if __name__ == '__main__':
     app.run()
