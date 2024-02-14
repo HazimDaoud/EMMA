@@ -1,8 +1,9 @@
-# fall Detection
+# EMMA - **E**mergency **M**onitoring for **M**edical **A**ssistance
 This project aims to detect falls using the The Arduino BLE Sense Rev2 sensor. 
 
 ## Directory Structure
 
+- `Datasets/`: Includes all related datasets.
 - `Hardware/`: Includes code related to hardware components.
 - `Interface/`: Includes code related to the user interface components.
 - `Software/`: Includes code related to software components.
