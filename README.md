@@ -16,7 +16,7 @@ Clone the repository to your local machine using the following command:
 
 ```bash
 
-git clone git@github.com:Datanauts-DSII/fallDetection.git
+git clone git@github.com:HazimDaoud/EMMA.git
 
 ```
 
@@ -30,4 +30,4 @@ To use the Fall Detection system:
 2. Run the software components on the Arduino device to start fall detection.
 3. Launch the user interface to view the results and receive alerts.
 
-For detailed usage instructions, refer to the README files in the `Hardware/` and `Interface/` directories.
+For detailed usage instructions, refer to the README files in the `Hardware/`, and `Interface/` directories.
