@@ -7,6 +7,7 @@ This project aims to detect falls using the The Arduino BLE Sense Rev2 sensor.
 - `Hardware/`: Includes code related to hardware components.
 - `Interface/`: Includes code related to the user interface components.
 - `Software/`: Includes code related to software components.
+- `Docs/`: Includes the presentation & the planning canvas.
 
 ## Setup
 Follow these steps to get started with the Fall Detection project:
